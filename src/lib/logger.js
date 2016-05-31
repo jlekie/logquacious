@@ -22,6 +22,10 @@ export default class Logger {
         
         let { outputs, levels, outputTemplates, channels } = this;
         
+        for (let output of outputs) {
+            output.id = _.uniqueId('logquacious.output.');
+        }
+        
         for (let level of levels) {
             this[level.name] = (...args) => this.log(level.name, ...args);
             
@@ -30,14 +34,24 @@ export default class Logger {
             }
         }
         
-        this.registeredChannels = {};
+        // this.registeredChannels = {};
+        // for (let output of outputs) {
+        //     if (!channels[output.channel]) {
+        //         throw new Error(`Channel ${output.channel} not defined`);
+        //     }
+            
+        //     this.registeredChannels[output.channel] = new channels[output.channel].type(this, _.defaults(_.omit(output, 'channel', 'level'), channels[output.channel].options || {}));
+        //     this.registeredChannels[output.channel].on('error', (err) => this.emit('error', err));
+        // }
+        
+        this.registeredOutputs = {};
         for (let output of outputs) {
             if (!channels[output.channel]) {
                 throw new Error(`Channel ${output.channel} not defined`);
             }
             
-            this.registeredChannels[output.channel] = new channels[output.channel].type(this, _.defaults(_.omit(output, 'channel', 'level'), channels[output.channel].options || {}));
-            this.registeredChannels[output.channel].on('error', (err) => this.emit('error', err));
+            this.registeredOutputs[output.id] = new channels[output.channel].type(this, _.defaults(_.omit(output, 'channel', 'level'), channels[output.channel].options || {}));
+            this.registeredOutputs[output.id].on('error', (err) => this.emit('error', err));
         }
     }
     
@@ -77,12 +91,21 @@ export default class Logger {
         for (let output of outputs) {
             let outputLevelIdx = _.findIndex(levels, l => l.name === output.level || _.includes(l.aliases, output.level));
             
+            // if (levelIdx <= outputLevelIdx) {
+            //     if (this.registeredChannels[output.channel]) {
+            //         channelPromises.push(this.registeredChannels[output.channel].logAsync(record));
+            //     }
+            //     else {
+            //         channelPromises.push(Bluebird.reject(new Error(`Channel ${output.channel} not defined.`)));
+            //     }
+            // }
+            
             if (levelIdx <= outputLevelIdx) {
-                if (this.registeredChannels[output.channel]) {
-                    channelPromises.push(this.registeredChannels[output.channel].logAsync(record));
+                if (this.registeredOutputs[output.id]) {
+                    channelPromises.push(this.registeredOutputs[output.id].logAsync(record));
                 }
                 else {
-                    channelPromises.push(Bluebird.reject(new Error(`Channel ${output.channel} not defined.`)));
+                    channelPromises.push(Bluebird.reject(new Error(`Output ${output.id} not defined.`)));
                 }
             }
         }
