@@ -1,4 +1,4 @@
-# Symvasi
+# Logquacious
 
 [![NPM Version](https://img.shields.io/npm/v/logquacious.svg)](https://www.npmjs.com/package/logquacious)
 [![Build Status](https://travis-ci.org/jlekie/logquacious.svg?branch=master)](https://travis-ci.org/jlekie/logquacious)
