@@ -1,7 +1,7 @@
 {
     "name": "logquacious",
     "description": "Yet another logging library for node.js",
-    "version": "0.4.0",
+    "version": "0.4.1",
     
     "author": {
         "name": "Joe Lekie",
