@@ -3,6 +3,7 @@ import Bluebird from 'bluebird';
 
 import OS from 'os';
 
+let loggerId = 0;
 export default class Logger {
     get channels() { return this.manager.channels }
     get levels() { return this.manager.levels }
@@ -18,13 +19,11 @@ export default class Logger {
             this[propKey] = props[propKey];
         }
         
-        if (!this.outputs) { this.outputs = [] }
+        this.outputs = _.map(this.outputs || [], output => new Output(output));
         
         let { outputs, levels, outputTemplates, channels } = this;
         
-        for (let output of outputs) {
-            output.id = _.uniqueId('logquacious.output.');
-        }
+        this.id = `logger.${loggerId++}`;
         
         for (let level of levels) {
             this[level.name] = (...args) => this.log(level.name, ...args);
@@ -131,5 +130,16 @@ export default class Logger {
             hostname: hostname,
             logger: name || 'default'
         }, metadata, loggerMetadata, managerMetadata);
+    }
+}
+
+let outputId = 0;
+class Output {
+    constructor(props) {
+        for (var propKey in props) {
+            this[propKey] = props[propKey];
+        }
+        
+        this.id = `logquacious.output.${outputId++}`;
     }
 }
