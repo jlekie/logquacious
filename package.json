@@ -27,9 +27,7 @@
         "js-yaml": "3.x",
         
         "source-map-support": "0.x",
-        "babel-runtime": "6.x",
-        
-        "fluent-logger": "1.x"
+        "babel-runtime": "6.x"
     },
     
     "devDependencies": {
